@@ -33,9 +33,28 @@ module CapstoneDemoapp
     # which default ORM are we using with scaffold
     # add --orm mongoid, or active_record
     # to rails generate cmd line to be specific
-    #config.generators { |g| g.orm :mongoid }
     config.generators { |g| g.orm :active_record }
+    #config.generators { |g| g.orm :mongoid }
 
+    config.middleware.insert_before 0, "Rack::Cors" do
+      allow do
+        origins '*'
+
+        resource '/api/*',
+          headers: :any,
+          methods: [:get, :post, :put, :delete, :options]
+      end
+    end
+
+    # config.middleware.insert_before 0, "Rack::Cors", :debug => true, :logger => (-> { Rails.logger }) do
+    #   allow do
+    #     origins '*'
+    #
+    #     resource '/api/*',
+    #              :headers => :any,
+    #              :methods => [:get, :post, :delete, :put, :options, :head]
+    #   end
+    # end
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
