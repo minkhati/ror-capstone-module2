@@ -41,8 +41,8 @@ module CapstoneDemoapp
         origins '*'
 
         resource '/api/*',
-          headers: :any,
-          methods: [:get, :post, :put, :delete, :options]
+          :headers => :any,
+          :methods => [:get, :post, :put, :delete, :options]
       end
     end
 
