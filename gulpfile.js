@@ -65,7 +65,7 @@ var cfg = {
 	jquery					: { src: bowerPath + "/jquery2/jquery.js" },
 	bootstrap_js		: { src: bowerPath + "/bootstrap-sass/assets/javascripts/bootstrap.js" },
 	angular					: { src: bowerPath + "/angular/angular.js" },
-	angular_ui_router: { src: bowerPath + "/angular-ui_-outer/release/angular-ui-router.js" },
+	angular_ui_router: { src: bowerPath + "/angular-ui-router/release/angular-ui-router.js" },
 	angular_resource: { src: bowerPath + "/angular-resource/angular-resource.js"},
 
 	//vendor build locations
@@ -77,28 +77,72 @@ var cfg = {
 						prd: "https://ror-capstone-module2-staging.herokuapp.com"
 	},
 
-	//files within these paths will be served as root-level resources in this priority order 
-
-	var devResourcePath = [
-		cfg.vendor_js.bld,
-		cfg.vendor_css.bld,
-		buildPath+"/javascripts",
-		buildPath+"/stylesheets",
-		srcPath,
-		srcPath+"/javascripts",
-		srcPath+"/stylesheets",
-	];
-
-
 };
 
 
+//files within these paths will be served as root-level resources in this priority order 
+var devResourcePath = [
+	cfg.vendor_js.bld,
+	cfg.vendor_css.bld,
+	buildPath+"/javascripts",
+	buildPath+"/stylesheets",
+	srcPath,
+	srcPath+"/javascripts",
+	srcPath+"/stylesheets",
+];
 
 
+// remove all files below the build area
+gulp.task("clean:build", function() {
+	return del(buildPath);
+});
 
+// remove all files below the dist area
+gulp.task("clean:dist", function() {
+	return del(distPath);
+});
 
+// remove all files below both the build and dist area
+gulp.task("clean", ["clean:build", "clean:dist"]);
 
+// place vendor css files in build area
+gulp.task("vendor_css", function() {
+	return gulp.src([
+			// cfg.bootstrap_css.src,
+		])
+		.pipe(gulp.dest(cfg.vendor_css.bld));
+}); 
 
+// place vendor js files in build area
+gulp.task("vendor_js", function() {
+	return gulp.src([
+			cfg.jquery.src,
+			cfg.bootstrap_js.src,
+			cfg.angular.src,
+			cfg.angular_ui_router.src,
+			cfg.angular_resource.src,
+		])
+		.pipe(gulp.dest(cfg.vendor_js.bld));
+});
+
+//place vendor font files in build area
+gulp.task('vendor_fonts', function() {
+	return gulp.src([
+			cfg.bootstrap_fonts.src,
+		])
+		.pipe(gulp.dest(cfg.vendor_fonts.bld));
+});
+
+gulp.task("css", function() {
+	return gulp.src(cfg.css.src).pipe(debug())
+	.pipe(sourcemaps.init())
+	.pipe(sass({ includePaths: [cfg.bootstrap_sass.src] }))
+	.pipe(sourcemaps.write("./maps"))
+	.pipe(gulp.dest(cfg.css.bld)).pipe(debug());
+});
+
+//prepare the development area
+gulp.task("build", sync.sync(["clean:build", ["vendor_css", "vendor_js", "vendor_fonts", "css"]]));
 
 
 
